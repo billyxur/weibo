@@ -12,7 +12,7 @@ class UsersController extends Controller
     public function __construct()
     {
         $this->middleware('auth', [
-            'expect' => ['show', 'create', 'store']
+            'except' => ['show', 'create', 'store', 'index']
         ]);
 
         //只让未登录用户访问注册页面：
@@ -21,19 +21,28 @@ class UsersController extends Controller
         ]);
     }
 
+    public function index()
+    {
+        $users = User::paginate(10);
+        return view('users.index', compact('users'));
+    }
 
+
+    //注册页面
     public function create()
     {
         return view('users.create');
     }
 
 
+    //个人中心
     public function show(User $user)
     {
         return view('users.show', compact('user'));
     }
 
 
+    //登录处理
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -55,6 +64,7 @@ class UsersController extends Controller
     }
 
 
+    //编辑个人信息页面
     public function edit(User $user)
     {
         $this->authorize('update', $user);
@@ -62,6 +72,7 @@ class UsersController extends Controller
     }
 
 
+    //更新个人信息函数
     public function update(User $user, Request $request)
     {
          $this->authorize('update', $user);
