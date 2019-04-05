@@ -42,7 +42,7 @@ class UsersController extends Controller
     }
 
 
-    //登录处理
+    //注册处理
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -92,5 +92,13 @@ class UsersController extends Controller
          session()->flash('success', '个人资料更新成功！');
 
          return redirect()->route('users.show', $user->id);
+    }
+
+    public function destroy(User $user)
+    {
+        $this->authorize('destroy', $user);
+        $user->delete();
+        session()->flash('success', '成功删除用户！');
+        return back();
     }
 }
