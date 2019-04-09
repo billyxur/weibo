@@ -59,6 +59,31 @@ class User extends Authenticatable
         return "http://www.gravatar.com/avatar/$hash?s=$size";
     }
 
+
+    //关注用户方法
+    public function follow($user_ids)
+    {
+        if(! is_array($user_ids)){
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->sync($user_ids, false);
+    }
+
+    //取消关注
+    public function unfollow($user_ids)
+    {
+        if(! is_array($user_ids)){
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->detach($user_ids);
+    }
+
+    //用于判断当前登录的用户 A 是否关注了用户 B
+    public function isFollowing($user_id)
+    {
+        return $this->followings->contains($user_id);
+    }
+
     public function statuses()
     {
         return $this->hasMany(Status::class);
@@ -68,5 +93,15 @@ class User extends Authenticatable
     {
         return $this->statuses()
                     ->orderBy('created_at', 'desc');
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::Class, 'followers', 'user_id', 'follower_id');
+    }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::Class, 'followers', 'follower_id', 'user_id');
     }
 }
